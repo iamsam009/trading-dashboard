@@ -1,0 +1,39 @@
+# ── Prometheus Configuration ─────────────────────────────
+# Scrapes metrics from the trading backend every 15 seconds.
+#
+# Targets:
+# - trading_backend:8000 → /metrics endpoint (Prometheus text format)
+# - prometheus self-monitoring
+#
+# Usage:
+#   docker compose -f docker-compose.prod.yml up -d prometheus
+#   open http://localhost:9090
+
+global:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files: []
+
+scrape_configs:
+  # ── Trading Dashboard Backend ──────────────────────────
+  - job_name: "trading_backend"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+          - "backend:8000"
+        labels:
+          service: "trading_backend"
+          environment: "production"
+
+  # ── Prometheus Self-Monitoring ─────────────────────────
+  - job_name: "prometheus"
+    static_configs:
+      - targets:
+          - "localhost:9090"

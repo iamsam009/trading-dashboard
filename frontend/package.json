@@ -1,0 +1,52 @@
+{
+    "name": "trading-dashboard-frontend",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "type-check": "tsc --noEmit",
+        "test": "jest --passWithNoTests",
+        "test:watch": "jest --watch --passWithNoTests",
+        "test:coverage": "jest --coverage --passWithNoTests"
+    },
+    "dependencies": {
+        "@tanstack/react-query": "^5.62.8",
+        "axios": "^1.7.9",
+        "clsx": "^2.1.1",
+        "date-fns": "^4.1.0",
+        "lightweight-charts": "^4.2.2",
+        "next": "^14.2.21",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-hot-toast": "^2.4.1",
+        "recharts": "^2.15.0",
+        "socket.io-client": "^4.8.1",
+        "tailwind-merge": "^2.6.0",
+        "zod": "^3.24.1",
+        "zustand": "^5.0.3"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.9",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.2",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^20.17.10",
+        "@types/react": "^18.3.17",
+        "@types/react-dom": "^18.3.5",
+        "autoprefixer": "^10.4.20",
+        "eslint": "^8.57.1",
+        "eslint-config-next": "^14.2.21",
+        "identity-obj-proxy": "^3.0.0",
+        "jest": "^30.4.2",
+        "jest-environment-jsdom": "^30.4.1",
+        "mock-socket": "^9.3.1",
+        "msw": "^2.14.6",
+        "postcss": "^8.4.49",
+        "tailwindcss": "^3.4.17",
+        "typescript": "^5.7.2"
+    }
+}

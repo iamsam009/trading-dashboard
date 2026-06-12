@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.venv/
+venv/
+
+# Backend
+backend/htmlcov/
+backend/.coverage
+backend/coverage.xml
+backend/.pytest_cache/
+backend/1.5.0
+backend/test_output.txt
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Docker
+*.log
+
+# TypeScript
+frontend/tsconfig.tsbuildinfo

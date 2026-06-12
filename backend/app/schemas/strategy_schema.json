@@ -1,0 +1,317 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://trading-dashboard.local/strategy.schema.json",
+    "title": "Trading Strategy Definition",
+    "description": "Schema for user-defined trading strategies. Supports indicator-based conditions, price thresholds, actions, and per-trade risk modifiers.",
+    "type": "object",
+    "required": [
+        "name",
+        "conditions",
+        "action"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "Human-readable strategy name."
+        },
+        "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Optional free-text description of the strategy."
+        },
+        "conditions": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 20,
+            "description": "List of entry/exit conditions. ALL conditions must be satisfied (logical AND) for the action to trigger.",
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/$defs/indicatorCondition"
+                    },
+                    {
+                        "$ref": "#/$defs/priceThresholdCondition"
+                    },
+                    {
+                        "$ref": "#/$defs/timeCondition"
+                    }
+                ]
+            }
+        },
+        "action": {
+            "type": "string",
+            "enum": [
+                "buy",
+                "sell",
+                "close",
+                "close_long",
+                "close_short"
+            ],
+            "description": "Trading action to execute when all conditions are met."
+        },
+        "quantity_percent": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 100,
+            "description": "Percentage of available capital to allocate to this trade (1–100)."
+        },
+        "cooldown_bars": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000,
+            "default": 0,
+            "description": "Minimum number of candles/bars to wait after a signal before the strategy can fire again."
+        },
+        "risk_modifiers": {
+            "type": "object",
+            "description": "Optional per-trade risk management parameters.",
+            "properties": {
+                "stop_loss_percent": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Stop-loss as percentage from entry price."
+                },
+                "take_profit_percent": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1000,
+                    "description": "Take-profit as percentage from entry price."
+                },
+                "trailing_stop_percent": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "description": "Trailing stop distance as percentage."
+                },
+                "max_holding_bars": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Maximum number of bars to hold a position. Auto-close after this many bars."
+                }
+            },
+            "additionalProperties": false
+        },
+        "symbols": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "uniqueItems": true,
+            "description": "List of trading symbols this strategy applies to (e.g., ['BTC/USDT', 'ETH/USDT']).",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20
+            }
+        },
+        "timeframe": {
+            "type": "string",
+            "enum": [
+                "1m",
+                "5m",
+                "15m",
+                "30m",
+                "1h",
+                "4h",
+                "1d",
+                "1w"
+            ],
+            "default": "1h",
+            "description": "Candle timeframe for indicator calculations."
+        },
+        "tags": {
+            "type": "array",
+            "maxItems": 20,
+            "uniqueItems": true,
+            "description": "Optional tags for categorization (e.g., ['scalping', 'BTC', 'trend-following']).",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50
+            }
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "indicatorCondition": {
+            "type": "object",
+            "required": [
+                "indicator",
+                "params"
+            ],
+            "description": "A condition based on a technical indicator value crossing a threshold or another indicator.",
+            "properties": {
+                "indicator": {
+                    "type": "string",
+                    "enum": [
+                        "SMA",
+                        "EMA",
+                        "RSI",
+                        "MACD",
+                        "MACD_SIGNAL",
+                        "MACD_HIST",
+                        "BB_UPPER",
+                        "BB_MIDDLE",
+                        "BB_LOWER",
+                        "ATR",
+                        "VOLUME",
+                        "VWAP"
+                    ],
+                    "description": "Technical indicator short name."
+                },
+                "params": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "description": "Indicator parameters (e.g., [9, 21] for two EMAs, or [14] for RSI period).",
+                    "items": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 500
+                    }
+                },
+                "crossover": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true and two indicator params are given, the condition triggers when the faster line crosses above the slower line."
+                },
+                "crossunder": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true and two indicator params are given, the condition triggers when the faster line crosses below the slower line."
+                },
+                "operator": {
+                    "type": "string",
+                    "enum": [
+                        ">",
+                        ">=",
+                        "<",
+                        "<=",
+                        "==",
+                        "!="
+                    ],
+                    "description": "Comparison operator for threshold checks."
+                },
+                "threshold": {
+                    "type": "number",
+                    "description": "Static numeric threshold to compare against the indicator value."
+                },
+                "compare_to": {
+                    "type": "string",
+                    "enum": [
+                        "price",
+                        "SMA",
+                        "EMA",
+                        "RSI",
+                        "MACD",
+                        "MACD_SIGNAL",
+                        "MACD_HIST",
+                        "BB_UPPER",
+                        "BB_MIDDLE",
+                        "BB_LOWER",
+                        "ATR",
+                        "VWAP"
+                    ],
+                    "description": "Instead of a static threshold, compare the indicator against another computed value or price."
+                },
+                "compare_params": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 5,
+                    "description": "Parameters for the comparison indicator (if compare_to is an indicator).",
+                    "items": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 500
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "not": {
+                        "required": [
+                            "crossover",
+                            "crossunder"
+                        ],
+                        "description": "crossover and crossunder are mutually exclusive."
+                    }
+                }
+            ]
+        },
+        "priceThresholdCondition": {
+            "type": "object",
+            "required": [
+                "operator",
+                "threshold"
+            ],
+            "description": "A condition based on the current price relative to a threshold.",
+            "properties": {
+                "price_type": {
+                    "type": "string",
+                    "enum": [
+                        "last",
+                        "bid",
+                        "ask",
+                        "mark"
+                    ],
+                    "default": "last",
+                    "description": "Which price to compare against."
+                },
+                "operator": {
+                    "type": "string",
+                    "enum": [
+                        ">",
+                        ">=",
+                        "<",
+                        "<=",
+                        "==",
+                        "!="
+                    ]
+                },
+                "threshold": {
+                    "type": "number",
+                    "description": "Price threshold value."
+                }
+            },
+            "additionalProperties": false
+        },
+        "timeCondition": {
+            "type": "object",
+            "required": [
+                "operator",
+                "threshold"
+            ],
+            "description": "A condition triggered after the position has been held for a certain duration.",
+            "properties": {
+                "metric": {
+                    "type": "string",
+                    "enum": [
+                        "bars_held",
+                        "seconds_held"
+                    ],
+                    "default": "bars_held",
+                    "description": "Time metric to evaluate."
+                },
+                "operator": {
+                    "type": "string",
+                    "enum": [
+                        ">",
+                        ">=",
+                        "<",
+                        "<="
+                    ]
+                },
+                "threshold": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Time threshold value."
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}
