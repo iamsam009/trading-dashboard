@@ -3,8 +3,8 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Enable Corepack for pnpm (or use npm – the lockfile decides)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable Corepack for pnpm (pin to v9 – Node 20 compatible)
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
 COPY package.json pnpm-lock.yaml* .npmrc* ./
 
