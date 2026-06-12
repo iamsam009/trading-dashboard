@@ -3,13 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Enable Corepack for pnpm (pin to v9 – Node 20 compatible)
-RUN corepack enable && corepack prepare pnpm@9 --activate
+COPY package.json package-lock.json* ./
 
-COPY package.json pnpm-lock.yaml* .npmrc* ./
-
-# Install dependencies (frozen lockfile for reproducible builds)
-RUN pnpm install --frozen-lockfile
+# Install dependencies (ci for reproducible builds)
+RUN npm ci
 
 COPY . .
 
@@ -19,7 +16,7 @@ ARG NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 ENV NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
 
-RUN pnpm build
+RUN npm run build
 
 # ─── Production Stage ──────────────────────────────────
 FROM node:20-alpine AS runner
