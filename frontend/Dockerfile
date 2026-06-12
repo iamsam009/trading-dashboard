@@ -10,6 +10,9 @@ RUN npm ci
 
 COPY . .
 
+# Ensure public directory exists (Next.js requires it for static assets)
+RUN mkdir -p /app/public
+
 # Build Next.js (standalone output for lean production image)
 ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ARG NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
