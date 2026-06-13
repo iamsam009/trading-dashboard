@@ -33,6 +33,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libpq-dev \
     curl \
+    ca-certificates \
+    openssl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder

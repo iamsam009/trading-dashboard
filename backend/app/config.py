@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     shark_api_secret: str = ""
     shark_base_url: str = "https://api.shark.in/v1"
     shark_ws_url: str = "wss://ws.shark.in/v1"
+    shark_ssl_verify: bool = True  # Set to False if Shark API has SSL/TLS issues
 
     # ── Security ───────────────────────────────────────
     secret_key: str = "change-me-to-a-random-secret-key"

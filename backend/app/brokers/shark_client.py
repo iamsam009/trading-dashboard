@@ -77,12 +77,14 @@ class SharkClient:
         api_secret: str | None = None,
         base_url: str | None = None,
         rate_limit: int = 10,
+        ssl_verify: bool | None = None,
     ) -> None:
         settings = get_settings()
         self._api_key = api_key or settings.shark_api_key
         self._api_secret = api_secret or settings.shark_api_secret
         self._base_url = (base_url or settings.shark_base_url).rstrip("/")
         self._rate_limiter = RateLimiter(rate=rate_limit)
+        self._ssl_verify = ssl_verify if ssl_verify is not None else settings.shark_ssl_verify
         self._client: httpx.AsyncClient | None = None
 
     # ── Auth helpers ──────────────────────────────────────────
@@ -131,6 +133,7 @@ class SharkClient:
         if self._client is None:
             self._client = httpx.AsyncClient(
                 timeout=httpx.Timeout(30.0, connect=10.0),
+                verify=self._ssl_verify,
             )
         return self._client
 
