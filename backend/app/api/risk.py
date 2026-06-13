@@ -76,8 +76,9 @@ async def update_settings(
             setattr(risk, field, value)
 
         db.add(risk)
-        await db.commit()
+        await db.flush()
         await db.refresh(risk)
+        # Commit is handled by get_db() dependency
 
         return RiskSettingsResponse.model_validate(risk)
 

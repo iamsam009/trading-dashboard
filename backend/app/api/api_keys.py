@@ -70,7 +70,7 @@ async def create_api_key(
     db.add(api_key)
     await db.flush()
     await db.refresh(api_key)
-    await db.commit()
+    # Commit is handled by get_db() dependency
 
     return ApiKeyOut.from_orm_model(api_key)
 
@@ -127,7 +127,7 @@ async def update_api_key(
 
     await db.flush()
     await db.refresh(api_key)
-    await db.commit()
+    # Commit is handled by get_db() dependency
     return ApiKeyOut.from_orm_model(api_key)
 
 
@@ -141,5 +141,5 @@ async def delete_api_key(
     api_key = await _get_key_or_404(key_id, current_user, db)
     await db.delete(api_key)
     await db.flush()
-    await db.commit()
+    # Commit is handled by get_db() dependency
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -31,58 +31,82 @@ router = APIRouter()
 @router.post("/signup", response_model=Token, status_code=status.HTTP_201_CREATED)
 async def signup(payload: UserCreate, db: AsyncSession = Depends(get_db)) -> Token:
     """Register a new user and return JWT tokens."""
-    # Check for duplicate email
-    existing = await db.execute(
-        select(User).where(User.email == payload.email)
-    )
-    if existing.scalar_one_or_none() is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="A user with this email already exists",
+    import logging
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Check for duplicate email
+        existing = await db.execute(
+            select(User).where(User.email == payload.email)
         )
+        if existing.scalar_one_or_none() is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A user with this email already exists",
+            )
 
-    user = User(
-        email=payload.email,
-        hashed_password=hash_password(payload.password),
-    )
-    db.add(user)
-    await db.flush()
-    await db.refresh(user)
-    await db.commit()
+        user = User(
+            email=payload.email,
+            hashed_password=hash_password(payload.password),
+        )
+        db.add(user)
+        await db.flush()
+        await db.refresh(user)
+        # Commit is handled by get_db() dependency
 
-    # Issue tokens
-    token_data = {"user_id": user.id, "email": user.email}
-    return Token(
-        access_token=create_access_token(token_data),
-        refresh_token=create_refresh_token(token_data),
-    )
+        # Issue tokens
+        token_data = {"user_id": user.id, "email": user.email}
+        return Token(
+            access_token=create_access_token(token_data),
+            refresh_token=create_refresh_token(token_data),
+        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Signup failed for email=%s", payload.email)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error during signup",
+        ) from exc
 
 
 @router.post("/login", response_model=Token)
 async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)) -> Token:
     """Authenticate with email + password and return JWT tokens."""
-    result = await db.execute(
-        select(User).where(User.email == payload.email)
-    )
-    user = result.scalar_one_or_none()
+    import logging
+    logger = logging.getLogger(__name__)
 
-    if user is None or not verify_password(payload.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+    try:
+        result = await db.execute(
+            select(User).where(User.email == payload.email)
         )
+        user = result.scalar_one_or_none()
 
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account is deactivated",
+        if user is None or not verify_password(payload.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password",
+            )
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is deactivated",
+            )
+
+        token_data = {"user_id": user.id, "email": user.email}
+        return Token(
+            access_token=create_access_token(token_data),
+            refresh_token=create_refresh_token(token_data),
         )
-
-    token_data = {"user_id": user.id, "email": user.email}
-    return Token(
-        access_token=create_access_token(token_data),
-        refresh_token=create_refresh_token(token_data),
-    )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.exception("Login failed for email=%s", payload.email)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error during login",
+        ) from exc
 
 
 @router.post("/refresh", response_model=Token)
