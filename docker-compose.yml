@@ -60,7 +60,9 @@ services:
       SHARK_BASE_URL: ${SHARK_BASE_URL:-https://api.shark.in/v1}
       SHARK_WS_URL: ${SHARK_WS_URL:-wss://ws.shark.in/v1}
       SHARK_SSL_VERIFY: ${SHARK_SSL_VERIFY:-true}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
       SECRET_KEY: ${SECRET_KEY}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-production}
       LOG_LEVEL: ${LOG_LEVEL:-info}
     ports:
@@ -91,6 +93,7 @@ services:
       SHARK_WS_URL: ${SHARK_WS_URL:-wss://ws.shark.in/v1}
       SHARK_SSL_VERIFY: ${SHARK_SSL_VERIFY:-true}
       SECRET_KEY: ${SECRET_KEY}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-production}
     volumes:
       - ./backend/app:/app/app:ro
@@ -118,6 +121,7 @@ services:
       SHARK_WS_URL: ${SHARK_WS_URL:-wss://ws.shark.in/v1}
       SHARK_SSL_VERIFY: ${SHARK_SSL_VERIFY:-true}
       SECRET_KEY: ${SECRET_KEY}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-production}
     volumes:
       - ./backend/app:/app/app:ro

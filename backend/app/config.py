@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     shark_ws_url: str = "wss://ws.shark.in/v1"
     shark_ssl_verify: bool = True  # Set to False if Shark API has SSL/TLS issues
 
+    # ── CORS ───────────────────────────────────────────
+    # Comma-separated list of allowed origins (e.g. "http://localhost:3000,http://65.2.22.19:3000")
+    allowed_origins: str = "http://localhost:3000,http://localhost"
+
     # ── Security ───────────────────────────────────────
     secret_key: str = "change-me-to-a-random-secret-key"
     algorithm: str = "HS256"

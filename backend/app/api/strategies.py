@@ -148,6 +148,7 @@ async def create_strategy(
     db.add(strategy)
     await db.flush()
     await db.refresh(strategy)
+    await db.commit()
     return strategy
 
 
@@ -214,6 +215,7 @@ async def update_strategy(
     strategy.updated_at = datetime.now(timezone.utc)
     await db.flush()
     await db.refresh(strategy)
+    await db.commit()
     return strategy
 
 
@@ -227,6 +229,7 @@ async def delete_strategy(
     strategy = await _get_strategy_or_404(strategy_id, current_user, db)
     await db.delete(strategy)
     await db.flush()
+    await db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

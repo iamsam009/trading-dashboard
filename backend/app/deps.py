@@ -26,7 +26,7 @@ from app.schemas.auth import TokenData
 # ── OAuth2 scheme ────────────────────────────────────────
 # This tells FastAPI to extract the Bearer token from the
 # `Authorization: Bearer <token>` header on protected routes.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 async def get_current_user(

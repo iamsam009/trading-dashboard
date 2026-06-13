@@ -7,7 +7,6 @@ import React, {
     useEffect,
     type DragEvent as ReactDragEvent,
 } from "react";
-import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 
 // ─── Types ───────────────────────────────────────────────
@@ -99,34 +98,7 @@ const DEFAULT_TEMPLATE: StrategyDefinition = {
 
 // ─── Helpers ───────────────────────────────────────────
 
-const api = axios.create({
-    baseURL: "/api/v1",
-    headers: { "Content-Type": "application/json" },
-});
-
-api.interceptors.request.use((config) => {
-    const token =
-        typeof window !== "undefined"
-            ? localStorage.getItem("access_token")
-            : null;
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-api.interceptors.response.use(
-    (res) => res,
-    (err) => {
-        const msg =
-            err.response?.data?.detail?.message ||
-            err.response?.data?.detail ||
-            err.message ||
-            "Request failed";
-        toast.error(typeof msg === "string" ? msg : JSON.stringify(msg));
-        return Promise.reject(err);
-    }
-);
+import api from "@/lib/api";
 
 function formatJson(obj: unknown): string {
     return JSON.stringify(obj, null, 2);

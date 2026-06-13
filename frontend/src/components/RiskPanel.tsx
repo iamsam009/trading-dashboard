@@ -8,26 +8,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from "react";
-import axios from "axios";
-
-// Read API base from env or default to localhost
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000";
-
-const api = axios.create({
-    baseURL: API_BASE,
-    headers: { "Content-Type": "application/json" },
-});
-
-// Attach JWT from localStorage if available
-api.interceptors.request.use((config) => {
-    if (typeof window !== "undefined") {
-        const token = localStorage.getItem("access_token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-    }
-    return config;
-});
+import api from "@/lib/api";
 
 // ---------------------------------------------------------------------------
 // Types

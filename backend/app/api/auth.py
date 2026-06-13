@@ -48,6 +48,7 @@ async def signup(payload: UserCreate, db: AsyncSession = Depends(get_db)) -> Tok
     db.add(user)
     await db.flush()
     await db.refresh(user)
+    await db.commit()
 
     # Issue tokens
     token_data = {"user_id": user.id, "email": user.email}

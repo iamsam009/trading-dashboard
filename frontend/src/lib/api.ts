@@ -53,6 +53,8 @@ api.interceptors.response.use(
             ) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("refresh_token");
+                // Also clear the auth cookie used by middleware
+                document.cookie = "auth_token=; path=/; max-age=0";
                 window.location.href = "/login";
             }
             return Promise.reject(error);

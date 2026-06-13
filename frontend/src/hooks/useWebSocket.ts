@@ -31,9 +31,8 @@ const PING_INTERVAL = 25000; // 25 seconds – must match backend HEARTBEAT_INTE
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function getWsUrl(userId: number, token: string): string {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = process.env.NEXT_PUBLIC_API_HOST || window.location.host;
-    return `${protocol}//${host}/api/v1/ws/${userId}?token=${encodeURIComponent(token)}`;
+    const baseUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000/ws";
+    return `${baseUrl}/${userId}?token=${encodeURIComponent(token)}`;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────

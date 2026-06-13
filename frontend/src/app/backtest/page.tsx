@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import axios from "axios";
 import { toast, Toaster } from "react-hot-toast";
 import { format, subDays } from "date-fns";
 
@@ -68,34 +67,7 @@ interface SubmitResponse {
 
 // ─── API Client ──────────────────────────────────────────
 
-const api = axios.create({
-    baseURL: "/api/v1",
-    headers: { "Content-Type": "application/json" },
-});
-
-api.interceptors.request.use((config) => {
-    const token =
-        typeof window !== "undefined"
-            ? localStorage.getItem("access_token")
-            : null;
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-api.interceptors.response.use(
-    (res) => res,
-    (err) => {
-        const msg =
-            err.response?.data?.detail?.message ||
-            err.response?.data?.detail ||
-            err.message ||
-            "Request failed";
-        toast.error(typeof msg === "string" ? msg : JSON.stringify(msg));
-        return Promise.reject(err);
-    }
-);
+import api from "@/lib/api";
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -300,8 +272,8 @@ function TradesTable({ trades }: { trades: Trade[] }) {
                             <td className="px-3 py-2 text-center">
                                 <span
                                     className={`text-xs font-semibold px-2 py-0.5 rounded ${trade.side === "LONG"
-                                            ? "text-emerald-400 bg-emerald-400/10"
-                                            : "text-red-400 bg-red-400/10"
+                                        ? "text-emerald-400 bg-emerald-400/10"
+                                        : "text-red-400 bg-red-400/10"
                                         }`}
                                 >
                                     {trade.side}
@@ -543,8 +515,8 @@ export default function BacktestPage() {
                         onClick={handleRunBacktest}
                         disabled={running || !selectedStrategy}
                         className={`px-6 py-2.5 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 ${running || !selectedStrategy
-                                ? "bg-slate-700 text-slate-500 cursor-not-allowed"
-                                : "bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20"
+                            ? "bg-slate-700 text-slate-500 cursor-not-allowed"
+                            : "bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20"
                             }`}
                     >
                         {running ? (

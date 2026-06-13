@@ -105,6 +105,7 @@ services:
       SHARK_BASE_URL: ${SHARK_BASE_URL:-https://api.shark.in/v1}
       SHARK_WS_URL: ${SHARK_WS_URL:-wss://ws.shark.in/v1}
       SHARK_SSL_VERIFY: ${SHARK_SSL_VERIFY:-true}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
       SECRET_KEY: ${SECRET_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-production}
@@ -137,8 +138,8 @@ services:
       options:
         max-size: "100m"
         max-file: "5"
-    # No --reload in production
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --log-level info
+    # No --reload in production; run migrations before starting
+    command: sh -c "PYTHONPATH=/app alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --log-level info"
 
   # ── Celery Worker ───────────────────────────────────────
   celery_worker:
