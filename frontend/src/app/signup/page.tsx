@@ -109,9 +109,9 @@ export default function SignupPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={6}
+                            minLength={8}
                             className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            placeholder="Min. 6 characters"
+                            placeholder="Min. 8 characters"
                         />
                     </div>
 
@@ -129,7 +129,7 @@ export default function SignupPage() {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
-                            minLength={6}
+                            minLength={8}
                             className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                             placeholder="Re-enter password"
                         />
